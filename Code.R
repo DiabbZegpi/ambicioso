@@ -111,11 +111,12 @@ esperanza <- ggplot(amb_map, aes(n, peso)) +
        x = "N° de lanzamientos",
        y = "Puntos esperados por tiro") +
   theme(plot.title = element_text(size = 12, hjust = .5, face = "bold"),
-        plot.subtitle = element_text(size = 10, hjust = .5, face = "italic"),
+        plot.subtitle = element_text(size = 10, hjust = .5, face = "italic", colour = "gray40"),
         axis.line = element_line(colour = "gray40"),
         axis.text = element_text(size = 8, colour = "gray20"),
         axis.title = element_text(size = 9),
-        panel.grid.minor.y = element_blank())
+        panel.grid.minor.y = element_blank(),
+        panel.grid.major.y = element_line(colour = "gray80"))
 
 
 write_csv(amb_map %>% select(-ensayo), path = "data.csv")  
