@@ -23,14 +23,14 @@ turno()
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~Simulación de 1000 turnos~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ensayo <- list()
-for (i in 1:1000) {
+for (i in 1:10000) {
   ensayo[[i]] <- turno()
 }
 
 
 library(tidyverse)
 
-ambicioso <- tibble(n_ensayo = 1:1000,
+ambicioso <- tibble(n_ensayo = 1:10000,
                     ensayo = ensayo)
 
 amb_map <- ambicioso %>% 
@@ -40,15 +40,44 @@ amb_map <- ambicioso %>%
 #~~~~~~~~~~~~~~'suma' es la suma de los puntos hasta obtener un '1'~~~~~~~~~~~~~
 #~~~~~~~~~~~~~~~~~'n' es la cantidad de tiros hasta obtener un 1~~~~~~~~~~~~~~~~
 
-theme_set(theme_light())
 
-ggplot(amb_map, aes(suma)) + 
-  geom_histogram(bins = 25, color = "white")
 
-ggplot(amb_map %>% filter(n <= 20), aes(n - 1)) + 
-  geom_histogram(bins = 20, color = "white")
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Gráficos~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+theme_histogram <- function(){
+  theme_minimal() + 
+    theme(axis.line.x = element_line(colour = "gray40"),
+          panel.grid.minor.y = element_blank(),
+          panel.grid.major.x = element_blank(),
+          panel.grid.minor.x = element_blank(),
+          panel.grid.major.y = element_line(colour = "gray80"),
+          axis.text = element_text(size = 12, colour = "gray20"),
+          axis.title = element_text(size = 14))
+}
 
-mean(amb_map$n > 1) 
+theme_set(theme_minimal())
+
+plot_ntiros <- ggplot(amb_map %>% filter(n <= 35), aes(n - 1)) + 
+  geom_histogram(bins = 25, fill = "forestgreen") +
+  scale_y_continuous(breaks = c(500, 1000, 1500, 2000, 2500)) +
+  labs(x = "N° de tiros hasta obtener un 1",
+       y = "Frecuencia absoluta") +
+  theme_histogram()
+
+plot_puntos <- ggplot(amb_map %>% filter(suma <= 140), aes(suma)) + 
+  geom_histogram(bins = 25, fill = "dodgerblue3") +
+  scale_y_continuous(breaks = c(500, 1000, 1500, 2000, 2500)) +
+  labs(x = "Suma de puntos por turno",
+       y = NULL) +
+  theme_histogram()
+  
+library(patchwork)
+library(ggtext)
+fig_frecuencias <- plot_ntiros + plot_puntos +
+  plot_annotation(title = "<span style='color:#228B22;'>Tiros máximos por turno</span> y <span style='color:#1874CD;'>puntaje obtenido</span>",
+                  subtitle = "Frecuencia de ocurrencia en 10.000 simulaciones",
+                  theme = theme(plot.title = element_markdown(hjust = .5, size = 18, face = "bold"),
+                                plot.subtitle = element_text(hjust = .5, size = 14, face = "italic", colour = "gray40")))
+ 
 
 probs <- vector()
 for(i in 1:20){
