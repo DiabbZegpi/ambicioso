@@ -118,7 +118,7 @@ esperanza <- ggplot(amb_map, aes(n, peso)) +
         panel.grid.minor.y = element_blank())
 
 
-  
+write_csv(amb_map %>% select(-ensayo), path = "data.csv")  
 saveRDS(amb_map, file = "data.rds")
 ggsave("figuras/histogramas.png", plot = histogramas, type = "cairo", dpi = 1200)
 ggsave("figuras/esperanza.png", plot = esperanza, type = "cairo", dpi = 1200)
