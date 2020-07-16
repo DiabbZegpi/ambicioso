@@ -19,4 +19,12 @@ El ambicioso es un juego de dados por turnos, en el que gana el jugador que prim
 
 ## Simulación
 
-Entremos al grueso del asunto. El elemento básico del juego es la tirada de un dado de seis caras, que se puede ver como un proceso estocástico. Como se sabe, la tirada de un dado se puede modelar con la distribución uniforme discreta con <img src="https://render.githubusercontent.com/render/math?math=p(x_i) = 1/6">.
+Entremos al grueso del asunto. El elemento básico del juego es la tirada de un dado de seis caras, que se puede ver como un proceso estocástico. Como se sabe, la tirada de un dado se puede modelar como una variable aleatoria que sigue la distribución uniforme discreta con <img src="https://render.githubusercontent.com/render/math?math=p(x_i) = 1/6">.
+
+La idea principal de este proyecto es aprovechar que la tirada del dado es un evento repetible y usar la [Ley de los grandes números](https://es.wikipedia.org/wiki/Ley_de_los_grandes_números), junto con el lenguage de programación `R` para simular miles turnos del juego y encontrar la *cantidad óptima de tiradas* que maximiza las chances de ganar al juego.
+
+> *Otro enfoque para resolver este problema es la vía matemática. Tal vez ataque al problema de ésta forma en el futuro próximo.*
+
+Para este proyecto probé con 1.000 y 10.000 simulaciones de turnos, obteniendo resultados similares (multiplicar por 10 las simulaciones ralentiza mucho la producción de gráficos y los resultados no varían de 10.000 en adelante). Lo que verán a continuación es el segundo caso.
+
+<img src="figuras/histogramas.png">
