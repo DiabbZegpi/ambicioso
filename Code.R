@@ -1,6 +1,10 @@
 # ~~~~~~~~~~~~~~~~~~~~~Simulación del juego "El ambicioso"~~~~~~~~~~~~~~~~~~~~~~
 set.seed(123)
 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Paquetes~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+library(tidyverse)  # Manipulación de datos
+library(ggtext)     # Personalización de texto usando HTML
+library(patchwork)  # Combinación de gráficos
 
 #~~~~~~Función que simula el lanzamiento de un dado hasta obtener un '1'~~~~~~~~
 #~~~~~~~~~~~~~El '1' se representa con un '0' porque da cero puntos~~~~~~~~~~~~~
@@ -27,9 +31,6 @@ for (i in 1:10000) {
   ensayo[[i]] <- turno()
 }
 
-
-library(tidyverse)
-
 ambicioso <- tibble(n_ensayo = 1:10000,
                     ensayo = ensayo)
 
@@ -41,6 +42,22 @@ amb_map <- ambicioso %>%
 #~~~~~~~~~~~~~~~~~'n' es la cantidad de tiros hasta obtener un 1~~~~~~~~~~~~~~~~
 
 
+#~~~~~~~~~~~~~~Generando los datos para el gráfico de optimización~~~~~~~~~~~~~~
+
+probs <- vector()
+for(i in 1:30){
+  probs[i] <- mean(amb_map$n == i)
+}
+
+probs <- as_tibble(probs) %>% 
+  mutate(n = 1:30)
+
+amb_map <- amb_map %>% 
+  left_join(probs, by = "n") %>%  
+  filter(n <= 30) %>% 
+  mutate(peso = value * suma) %>% 
+  arrange(desc(peso))
+
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Gráficos~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 theme_histogram <- function(){
@@ -50,8 +67,8 @@ theme_histogram <- function(){
           panel.grid.major.x = element_blank(),
           panel.grid.minor.x = element_blank(),
           panel.grid.major.y = element_line(colour = "gray80"),
-          axis.text = element_text(size = 12, colour = "gray20"),
-          axis.title = element_text(size = 14))
+          axis.text = element_text(size = 8, colour = "gray20"),
+          axis.title = element_text(size = 9))
 }
 
 theme_set(theme_minimal())
@@ -70,37 +87,38 @@ plot_puntos <- ggplot(amb_map %>% filter(suma <= 140), aes(suma)) +
        y = NULL) +
   theme_histogram()
   
-library(patchwork)
-library(ggtext)
-fig_frecuencias <- plot_ntiros + plot_puntos +
+
+histogramas <- plot_ntiros + plot_puntos +
   plot_annotation(title = "<span style='color:#228B22;'>Tiros máximos por turno</span> y <span style='color:#1874CD;'>puntaje obtenido</span>",
-                  subtitle = "Frecuencia de ocurrencia en 10.000 simulaciones",
-                  theme = theme(plot.title = element_markdown(hjust = .5, size = 18, face = "bold"),
-                                plot.subtitle = element_text(hjust = .5, size = 14, face = "italic", colour = "gray40")))
+                  subtitle = "Frecuencia de ocurrencia sobre 10.000 simulaciones",
+                  theme = theme(plot.title = element_markdown(hjust = .5, size = 12, face = "bold"),
+                                plot.subtitle = element_text(hjust = .5, size = 10, face = "italic", colour = "gray40")))
  
 
-probs <- vector()
-for(i in 1:20){
-  probs[i] <- mean(amb_map$n == i)
-}
+sam <- sample(1:10000, 1000, replace = FALSE)
+muestra <- amb_map[sam,]
 
-probs <- as_tibble(probs) %>% 
-  mutate(n = 1:20)
+esperanza <- ggplot(amb_map, aes(n, peso)) +
+  geom_jitter(height = .05, width = .3, alpha = .3, 
+              aes(size = suma/10, colour = log(peso+.5)), 
+              show.legend = FALSE, shape = 16) +
+  geom_smooth(method = "loess", se = FALSE, colour = "brown2", size = 1.2) +
+  geom_vline(xintercept = 6, linetype = "dashed", colour = "gray40") +
+  scale_x_continuous(breaks = c(0,10,20,30)) +
+  scale_color_gradient2(low = "black", mid = "red4", high = "yellow") +
+  labs(title = "Tirar 6 veces: la estrategia más consistente para ganar",
+       subtitle = "Resultados sobre 10.000 simulaciones",
+       x = "N° de lanzamientos",
+       y = "Puntos esperados por tiro") +
+  theme(plot.title = element_text(size = 12, hjust = .5, face = "bold"),
+        plot.subtitle = element_text(size = 10, hjust = .5, face = "italic"),
+        axis.line = element_line(colour = "gray40"),
+        axis.text = element_text(size = 8, colour = "gray20"),
+        axis.title = element_text(size = 9),
+        panel.grid.minor.y = element_blank())
 
-depurado <- amb_map %>% 
-  left_join(probs, by = "n") %>%  
-  filter(n <= 20) %>% 
-  mutate(peso = value * suma) %>% 
-  arrange(desc(peso))
 
-peso_lanzamiento <- ggplot(depurado, aes(n, peso)) +
-  geom_point() +
-  geom_smooth(color = "red", method = "loess") +
-  labs(x = "Total lanzamientos por turno",
-       y = "Suma de puntos * probabilidad de ocurrencia",
-       title = "Para ganar al ambicioso hay que lanzar el dado entre 8 y 9 veces")
-
-ggplot(depurado, aes(suma, n)) +
-  geom_point()
-
-ggsave("../Desktop/ambicioso.pdf", plot = peso_lanzamiento)
+  
+saveRDS(amb_map, file = "data.rds")
+ggsave("figuras/histogramas.png", plot = histogramas, type = "cairo", dpi = 1200)
+ggsave("figuras/esperanza.png", plot = esperanza, type = "cairo", dpi = 1200)
