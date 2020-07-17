@@ -46,7 +46,7 @@ Tortuga o liebre, volátil o estable, riesgo o seguridad... Ya conocemos las dos
 
 Como he dicho antes, este problema se puede resolver con matemáticas, pero aprovecharemos el dataset de 10.000 simulaciones disponible [aquí](data.csv).
 
-Digamos que un jugador de bar nos engatuza para participar en su juego, donde tenemos que elegir una de tres tazas. Bajo una de ellas hay una polca. Si elegimos la taza que contiene la polca, ganaremos $1.500, pero si nos equivocamos tendremos que pagar $900. El dinero que esperamos ganar o perder si jugamos los matemáticos lo han definido <img src="https://render.githubusercontent.com/render/math?math=E=P(ganar)*1500-P(perder)*900">. 
+Digamos que un jugador de bar nos engatuza para participar en su juego, donde tenemos que elegir una de tres tazas. Bajo una de ellas hay una polca. Si elegimos la taza que contiene la polca, ganaremos $1.500, pero si nos equivocamos tendremos que pagar $900. El dinero que esperamos ganar o perder si jugamos los matemáticos lo han definido <img src="https://render.githubusercontent.com/render/math?math=E=P(ganar)*1500-P(perder)*900">. Yo no jugaría ¿y usted?
 
 Análogamente, podemos definir el el valor esperado o esperanza matemática de nuestro problema como sigue:
 
@@ -56,3 +56,15 @@ Donde <img src="https://render.githubusercontent.com/render/math?math=X"> es el 
 ¡Suficientes matemáticas! Vamos a materializarlo mediante una visualización. 
 
 <img src="figuras/esperanza.png">
+
+### Aprendizajes del gráfico
+
+- Tirar 6 veces da aproximadamente 1,5 puntos por tiro, es decir, turnos de 9 puntos en promedio. En la práctica, será difícil no hacer más de 9 puntos con 6 tiradas, pero muchas veces haremos 0. Es más, **la probabilidad de obtener un 1 en 6 tiradas es de 66%**. Esto hace que tirar 6 veces sea una combinación razonable entre riesgo y recompensa.
+- El valor esperado por tirada del dado sobre 20 lanzamientos es muy bajo. Pese a que es tentador tirar muchas veces, **la recompensa media no satisface**. Esto lo he querido representar con los colores, ya que parece un avión cayendo con los motores fundidos.
+- **El rango de variación entre 3 y 15 tiradas es muy ancho**. Esto es un punto a favor del juego; los jugadores podrán ser cautos y siempre hacer 6 tiradas, pero esto no les da inmunidad contra los suertudos que hacen 60 puntos de una zancada.
+- Parece haber un **punto de inflexión** en la curva en torno al 16; hasta ahí la curva desciende casi linealmente, pero después se quiebra ligeramente a favor de las tiradas más largas.  
+
+## Conclusión
+
+Tirar el dado 6 veces maximiza los puntos por tirada, pero es discutible que sean los resultados más estables. El rango de variación lo acusa.
+Para mí, el 16 será el nuevo horizonte. Superarlo significa que gano más putos por tirada y, por supuesto, es más emocionante tirar 20 veces que 6 veces.
